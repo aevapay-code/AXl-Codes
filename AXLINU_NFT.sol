@@ -1530,6 +1530,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
 
     Counters.Counter private _tokenIdCounter;
     uint256 private  tokenPrice = 80000000000000000; // 0.08 ETH
+    //uint256 private  tokenPrice = 80000000000000; // 0.00008 ETH
     uint private constant maxTokenPurchase = 20;
     uint256 public maxSupply = 10000;
     uint256 public maxAirdropAmount = 100;
@@ -1542,7 +1543,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
     string private _baseURIextended;
 
     address mainAddr = 0xa4fDeBC21F0d5b1549bEbC1D3aa298dA15571080;
-    address main2Addr = 0xcea1195A82013fFb50CbCbe122844F76887bE91C;
+    address main2Addr = 0x912963BBddd3B9f84A23dBD4E972AcC6B9E8Aa81;
     
     // WhiteLists for presale.
     mapping(address => uint256) public whiteList;
@@ -1554,7 +1555,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
     
     uint public airdropCount;
  
-    constructor(string memory baseURI, string memory _notrevealURI) ERC721("AXLINU", "AXLINU") { 
+    constructor(string memory baseURI, string memory _notrevealURI) ERC721("AXLIN", "AXLINU") { 
         _baseURIextended = baseURI;
         notRevealedUri = _notrevealURI;
         airdropCount = 0;
@@ -1568,6 +1569,10 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
         tokenPrice = _price;
     }
 
+    function getTokenPrice() external view returns(uint256) {
+        return tokenPrice;
+    }
+
     // function setMax(uint256 _supply) external onlyOwner() {
     //     maxSupply = _supply;
     // }
@@ -1578,6 +1583,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
         }
     }
     
+    // Do this one time
     function addAirdropList(uint256[] calldata indexes) public onlyOwner {
         //require(airdropCount == 0, "Can do airdrop only one time");
         require(maxAirdropAmount >= indexes.length, "Airdrop number must be under 100");
@@ -1600,7 +1606,6 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
             }
         }
         
-        maxSupply -= airdropAmount; 
         airdropCount++;
     }
 
@@ -1696,7 +1701,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
     }
 
     function internalMint(address to) internal {
-        require(totalSupply() < maxSupply, "Supply depleted");
+        require(totalSupply() < maxSupply - airdropAmount, "Supply depleted");
         // _tokenIdCounter.increment();
         // _safeMint(to, _tokenIdCounter.current());
 
@@ -1721,7 +1726,6 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
             _tokenIdCounter.increment();
             _safeMint(msg.sender, airdropArray[i]);
         }
-        maxSupply += airdropAmount; 
     }
 
     function withdraw() external onlyOwner {

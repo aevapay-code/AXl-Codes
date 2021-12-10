@@ -446,13 +446,13 @@ contract AXLToken is Context, IERC20, IERC20Metadata, Ownable {
         _airdropAmount = 1 * 10**9 * 10**18;
         
         // Test address
-        // presaleAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // stakingAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // cexReservedAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // teamAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // incentiveAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // dexAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
-        // airdropAddress = 0xaC83aa6Dc293f488035Ee15B0364548D3DD3C0c4;
+        // presaleAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // stakingAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // cexReservedAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // teamAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // incentiveAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // dexAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
+        // airdropAddress = 0xE0C0A3Ec3A33D20473d4a2c9A0f7B9479D23b849;
 
         // Real address
         presaleAddress = 0xa4fDeBC21F0d5b1549bEbC1D3aa298dA15571080;
