@@ -1542,7 +1542,7 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
     string private _baseURIextended;
 
     address mainAddr = 0xa4fDeBC21F0d5b1549bEbC1D3aa298dA15571080;
-    address main2Addr = 0x912963BBddd3B9f84A23dBD4E972AcC6B9E8Aa81;
+    address main2Addr = 0xcea1195A82013fFb50CbCbe122844F76887bE91C;
     
     // WhiteLists for presale.
     mapping(address => uint256) public whiteList;
