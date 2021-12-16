@@ -636,6 +636,7 @@ contract AXLPresale is ReentrancyGuard {
     event UserWithdrawTokensSuccess(uint256);
 
     address deadaddr = 0x000000000000000000000000000000000000dEaD;
+    uint256 public lock_delay;
 
     modifier onlyOwner() {
         require(owner == msg.sender, "Not presale owner.");
@@ -709,7 +710,7 @@ contract AXLPresale is ReentrancyGuard {
         }
         uint256 tokensSold = amount_in.mul(presale_info.token_rate).div(10 ** 18);
         require(tokensSold > 0, "ZERO TOKENS");
-        require(tokensSold <= IERC20(presale_info.sale_token).balanceOf(address(this)), "Token reamin error");
+        require(tokensSold <= IERC20(presale_info.sale_token).balanceOf(address(this)), "Token remain error");
         if (buyer.base == 0) {
             status.num_buyers++;
         }
@@ -729,7 +730,9 @@ contract AXLPresale is ReentrancyGuard {
     // withdraw presale tokens
     // percentile withdrawls allows fee on transfer or rebasing tokens to still work
     function userWithdrawTokens () public nonReentrant {
-        require(presaleStatus() == 2, "Not succeeded"); // Sucess
+        require(presaleStatus() == 2, "Not succeeded"); // Success
+        require(block.timestamp >= presale_info.presale_end + lock_delay, "Token Locked."); // Lock duration check
+
         BuyerInfo storage buyer = buyers[msg.sender];
         uint256 remaintoken = status.sold_amount.sub(status.token_withdraw);
         require(remaintoken >= buyer.sale, "Nothing to withdraw.");
@@ -782,7 +785,7 @@ contract AXLPresale is ReentrancyGuard {
     }
 
     function purchaseICOCoin () public nonReentrant onlyOwner {
-        require(presaleStatus() == 2, "Not succeeded"); // Sucess
+        require(presaleStatus() == 2, "Not succeeded"); // Success
         
         address payable reciver = payable(owner);
         reciver.transfer(address(this).balance);
@@ -792,9 +795,12 @@ contract AXLPresale is ReentrancyGuard {
         return block.timestamp;
     }
 
+    function setLockDelay (uint256 delay) public onlyOwner {
+        lock_delay = delay;
+    }
 
     function remainingBurn() public onlyOwner {
-        require(presaleStatus() == 2, "Not succeeded"); // Sucess
+        require(presaleStatus() == 2, "Not succeeded"); // Success
         require(presale_info.hardcap * presale_info.token_rate > status.sold_amount * (10 ** tokeninfo.decimal), "Nothing to burn");
         
         //uint256 rushTokenAmount = IERC20(presale_info.sale_token).balanceOf(address(this)) - status.sold_amount * (10 ** tokeninfo.decimal);
