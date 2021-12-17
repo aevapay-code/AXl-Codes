@@ -590,9 +590,9 @@ interface IERC20 {
 contract AXLPresale is ReentrancyGuard {
     using SafeMath for uint256;
 
+
     struct PresaleInfo {
         address sale_token; // Sale token
-        uint256 sale_supply; // Sale amount
         uint256 token_rate; // 1 base token = ? s_tokens, fixed price
         uint256 raise_min; // Maximum base token BUY amount per buyer
         uint256 raise_max; // The amount of presale tokens up for presale
@@ -629,6 +629,8 @@ contract AXLPresale is ReentrancyGuard {
     PresaleStatus public status;
     TokenInfo public tokeninfo;
 
+    uint256 persaleSetting;
+
     mapping(address => BuyerInfo) public buyers;
 
     event UserDepsitedSuccess(address, uint256);
@@ -649,7 +651,6 @@ contract AXLPresale is ReentrancyGuard {
 
     function init_private (
         address _sale_token,
-        uint256 _sale_supply,
         uint256 _token_rate,
         uint256 _raise_min, 
         uint256 _raise_max, 
@@ -658,9 +659,11 @@ contract AXLPresale is ReentrancyGuard {
         uint256 _presale_start,
         uint256 _presale_end
         ) public onlyOwner {
+
+        require(persaleSetting == 0, "Already setted");
+        require(_sale_token != address(0), "Zero Address");
         
         presale_info.sale_token = address(_sale_token);
-        presale_info.sale_supply = _sale_supply;
         presale_info.token_rate = _token_rate;
         presale_info.raise_min = _raise_min;
         presale_info.raise_max = _raise_max;
@@ -675,6 +678,8 @@ contract AXLPresale is ReentrancyGuard {
         tokeninfo.symbol = IERC20(presale_info.sale_token).symbol();
         tokeninfo.decimal = IERC20(presale_info.sale_token).decimals();
         tokeninfo.totalsupply = IERC20(presale_info.sale_token).totalSupply();
+
+        persaleSetting = 1;
     }
 
     function presaleStatus() public view returns (uint256) {
@@ -704,13 +709,17 @@ contract AXLPresale is ReentrancyGuard {
         uint256 amount_in = msg.value;
         uint256 allowance = presale_info.raise_max.sub(buyer.base);
         uint256 remaining = presale_info.hardcap - status.raised_amount;
+
         allowance = allowance > remaining ? remaining : allowance;
         if (amount_in > allowance) {
             amount_in = allowance;
         }
+
         uint256 tokensSold = amount_in.mul(presale_info.token_rate).div(10 ** 18);
+
         require(tokensSold > 0, "ZERO TOKENS");
-        require(tokensSold <= IERC20(presale_info.sale_token).balanceOf(address(this)), "Token remain error");
+        require(status.raised_amount * presale_info.token_rate <= IERC20(presale_info.sale_token).balanceOf(address(this)), "Token remain error");
+        
         if (buyer.base == 0) {
             status.num_buyers++;
         }
@@ -732,7 +741,7 @@ contract AXLPresale is ReentrancyGuard {
     function userWithdrawTokens () public nonReentrant {
         require(presaleStatus() == 2, "Not succeeded"); // Success
         require(block.timestamp >= presale_info.presale_end + lock_delay, "Token Locked."); // Lock duration check
-
+        
         BuyerInfo storage buyer = buyers[msg.sender];
         uint256 remaintoken = status.sold_amount.sub(status.token_withdraw);
         require(remaintoken >= buyer.sale, "Nothing to withdraw.");
@@ -801,10 +810,10 @@ contract AXLPresale is ReentrancyGuard {
 
     function remainingBurn() public onlyOwner {
         require(presaleStatus() == 2, "Not succeeded"); // Success
-        require(presale_info.hardcap * presale_info.token_rate > status.sold_amount * (10 ** tokeninfo.decimal), "Nothing to burn");
+        require(presale_info.hardcap * presale_info.token_rate >= status.sold_amount * (10 ** tokeninfo.decimal), "Nothing to burn");
         
         //uint256 rushTokenAmount = IERC20(presale_info.sale_token).balanceOf(address(this)) - status.sold_amount * (10 ** tokeninfo.decimal);
-        uint256 rushTokenAmount = presale_info.sale_supply * (10 ** tokeninfo.decimal) - status.sold_amount * (10 ** tokeninfo.decimal);
+        uint256 rushTokenAmount = presale_info.hardcap * (10 ** tokeninfo.decimal) - status.sold_amount * (10 ** tokeninfo.decimal);
 
        TransferHelper.safeTransfer(address(presale_info.sale_token), address(deadaddr), rushTokenAmount);
     }
