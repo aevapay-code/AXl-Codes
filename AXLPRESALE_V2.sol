@@ -813,8 +813,8 @@ contract AXLPresale is ReentrancyGuard {
         require(presale_info.hardcap * presale_info.token_rate >= status.sold_amount * (10 ** tokeninfo.decimal), "Nothing to burn");
         
         //uint256 rushTokenAmount = IERC20(presale_info.sale_token).balanceOf(address(this)) - status.sold_amount * (10 ** tokeninfo.decimal);
-        uint256 rushTokenAmount = presale_info.hardcap * (10 ** tokeninfo.decimal) - status.sold_amount * (10 ** tokeninfo.decimal);
+        uint256 rushTokenAmount = presale_info.hardcap * presale_info.token_rate - status.sold_amount * (10 ** tokeninfo.decimal);
 
-       TransferHelper.safeTransfer(address(presale_info.sale_token), address(deadaddr), rushTokenAmount);
+        TransferHelper.safeTransfer(address(presale_info.sale_token), address(deadaddr), rushTokenAmount);
     }
 }
