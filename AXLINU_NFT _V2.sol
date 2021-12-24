@@ -1712,9 +1712,10 @@ contract AXLINU is ERC721, ERC721Enumerable, Ownable, ERC721Burnable {
         _safeMint(to, randomArray[rand]);
 
         for(uint256 i = rand; i < randomArray.length - 1; i++)
-        {
-            randomArray[i] = randomArray[i + 1];
-        }
+        // {
+        //     randomArray[i] = randomArray[i + 1];
+        // }
+        randomArray[rand] = randomArray[randomArray.length - 1];
         
         randomArray.pop();
     }
